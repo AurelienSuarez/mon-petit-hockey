@@ -2,11 +2,26 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { slotLabel } from "@/lib/tournament/labels";
 
-export default async function MatchesPage() {
+const GENDER_FILTERS = [
+  { value: undefined, label: "Tous" },
+  { value: "M", label: "Hommes" },
+  { value: "F", label: "Femmes" },
+] as const;
+
+export default async function MatchesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ gender?: string }>;
+}) {
   const { supabase } = await requireUser();
+  const { gender } = await searchParams;
+  const activeGender = gender === "M" || gender === "F" ? gender : undefined;
+
+  let query = supabase.from("matches").select("*").order("kickoff", { ascending: true });
+  if (activeGender) query = query.eq("gender", activeGender);
 
   const [{ data: matches }, { data: teams }] = await Promise.all([
-    supabase.from("matches").select("*").order("kickoff", { ascending: true }),
+    query,
     supabase.from("teams").select("id, name"),
   ]);
 
@@ -17,6 +32,18 @@ export default async function MatchesPage() {
   return (
     <>
       <h1>Matchs</h1>
+      <p>
+        {GENDER_FILTERS.map((f, i) => (
+          <span key={f.label}>
+            {i > 0 && " · "}
+            {activeGender === f.value ? (
+              <strong>{f.label}</strong>
+            ) : (
+              <Link href={f.value ? `/matches?gender=${f.value}` : "/matches"}>{f.label}</Link>
+            )}
+          </span>
+        ))}
+      </p>
       <table>
         <thead>
           <tr>

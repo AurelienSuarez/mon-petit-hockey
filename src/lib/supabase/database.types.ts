@@ -76,12 +76,13 @@ export interface Database {
           name: string;
           invite_code: string;
           owner_id: string;
+          gender: Gender;
           scoring_rules: Record<string, unknown> | null;
           created_at: string;
         };
         // Written only via the create_league() RPC (SECURITY DEFINER) — these shapes
         // exist to satisfy the schema's type constraints, not for direct client use.
-        Insert: { id?: string; name: string; invite_code: string; owner_id: string };
+        Insert: { id?: string; name: string; invite_code: string; owner_id: string; gender: Gender };
         Update: Partial<{ name: string }>;
         Relationships: [];
       };
@@ -129,7 +130,10 @@ export interface Database {
       };
     };
     Functions: {
-      create_league: { Args: { p_name: string }; Returns: Database["public"]["Tables"]["leagues"]["Row"] };
+      create_league: {
+        Args: { p_name: string; p_gender: Gender };
+        Returns: Database["public"]["Tables"]["leagues"]["Row"];
+      };
       join_league_by_code: { Args: { p_code: string }; Returns: Database["public"]["Tables"]["leagues"]["Row"] };
       is_league_member: { Args: { p_league_id: string; p_user_id?: string }; Returns: boolean };
       league_standings: {

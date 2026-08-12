@@ -16,6 +16,20 @@ export default function NewLeaguePage() {
           Nom de la ligue
           <input type="text" name="name" required minLength={3} maxLength={60} />
         </label>
+        <label>
+          Compétition
+          <select name="gender" required defaultValue="">
+            <option value="" disabled>
+              Choisir...
+            </option>
+            <option value="M">Tournoi Hommes</option>
+            <option value="F">Tournoi Femmes</option>
+          </select>
+        </label>
+        <p className="muted">
+          Une ligue ne concerne qu&apos;une seule compétition — le classement ne comptera que les points sur ces
+          matchs-là. Crée une deuxième ligue si tu veux aussi suivre l&apos;autre tournoi.
+        </p>
         {state.error && <p className="error">{state.error}</p>}
         <button type="submit" disabled={pending}>
           {pending ? "Création..." : "Créer"}

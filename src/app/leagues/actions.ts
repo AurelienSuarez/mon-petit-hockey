@@ -10,17 +10,21 @@ export interface LeagueActionState {
 
 const createSchema = z.object({
   name: z.string().trim().min(3, "3 caractères minimum").max(60, "60 caractères maximum"),
+  gender: z.enum(["M", "F"], { message: "Choisis une compétition" }),
 });
 
 export async function createLeagueAction(
   _prev: LeagueActionState,
   formData: FormData,
 ): Promise<LeagueActionState> {
-  const parsed = createSchema.safeParse({ name: formData.get("name") });
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Nom invalide" };
+  const parsed = createSchema.safeParse({ name: formData.get("name"), gender: formData.get("gender") });
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Formulaire invalide" };
 
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("create_league", { p_name: parsed.data.name });
+  const { data, error } = await supabase.rpc("create_league", {
+    p_name: parsed.data.name,
+    p_gender: parsed.data.gender,
+  });
   if (error || !data) return { error: error?.message ?? "Erreur lors de la création" };
 
   redirect(`/leagues/${data.id}`);

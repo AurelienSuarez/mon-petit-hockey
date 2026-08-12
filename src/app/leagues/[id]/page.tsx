@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 
@@ -7,7 +8,7 @@ export default async function LeaguePage({ params }: { params: Promise<{ id: str
 
   const { data: league } = await supabase
     .from("leagues")
-    .select("id, name, invite_code, owner_id")
+    .select("id, name, invite_code, owner_id, gender")
     .eq("id", id)
     .single();
 
@@ -18,6 +19,10 @@ export default async function LeaguePage({ params }: { params: Promise<{ id: str
   return (
     <>
       <h1>{league.name}</h1>
+      <p className="muted">
+        Tournoi {league.gender === "F" ? "Femmes" : "Hommes"} ·{" "}
+        <Link href={`/matches?gender=${league.gender}`}>voir les matchs de cette compétition</Link>
+      </p>
       <p className="muted">
         Code d&apos;invitation à partager : <strong>{league.invite_code}</strong>
       </p>

@@ -6,7 +6,7 @@ export default async function DashboardPage() {
 
   const { data: leagues } = await supabase
     .from("leagues")
-    .select("id, name, invite_code")
+    .select("id, name, invite_code, gender")
     .order("created_at", { ascending: false });
 
   return (
@@ -21,7 +21,7 @@ export default async function DashboardPage() {
       {leagues?.map((league) => (
         <div className="card" key={league.id}>
           <Link href={`/leagues/${league.id}`}>
-            <strong>{league.name}</strong>
+            <strong>{league.name}</strong> · {league.gender === "F" ? "♀ Femmes" : "♂ Hommes"}
           </Link>
           <p className="muted">Code d&apos;invitation : {league.invite_code}</p>
         </div>
