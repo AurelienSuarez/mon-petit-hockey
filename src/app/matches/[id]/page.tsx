@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
+import { formatKickoff } from "@/lib/format";
 import { slotLabel } from "@/lib/tournament/labels";
 import { hasPassed } from "@/lib/time";
 import { PredictionForm } from "./prediction-form";
@@ -70,7 +71,7 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
         {homeLabel} – {awayLabel}
       </h1>
       <p className="muted">
-        {new Date(match.kickoff).toLocaleString("fr-FR", { dateStyle: "full", timeStyle: "short" })}
+        {formatKickoff(match.kickoff, "full")}
         {match.time_uncertain && " ⚠ horaire à confirmer"} · {match.venue === "wavre" ? "Wavre" : "Amstelveen"}
         {match.placement_label ? ` · ${match.placement_label}` : ""}
       </p>

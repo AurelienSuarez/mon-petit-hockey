@@ -1,4 +1,5 @@
 import { requireAdmin } from "@/lib/auth";
+import { formatKickoff } from "@/lib/format";
 import { slotLabel } from "@/lib/tournament/labels";
 import { ResultForm } from "./result-form";
 
@@ -37,7 +38,7 @@ export default async function AdminResultsPage() {
         <tbody>
           {pending.map((m) => (
             <tr key={m.id}>
-              <td>{new Date(m.kickoff).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}</td>
+              <td>{formatKickoff(m.kickoff)}</td>
               <td>
                 {m.gender === "F" ? "♀" : "♂"} {label(m.home_team_id, m.slot_home)} – {label(m.away_team_id, m.slot_away)}
               </td>

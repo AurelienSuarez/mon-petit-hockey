@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
+import { formatKickoff } from "@/lib/format";
 import { slotLabel } from "@/lib/tournament/labels";
 
 const GENDER_FILTERS = [
@@ -57,7 +58,7 @@ export default async function MatchesPage({
           {matches?.map((m) => (
             <tr key={m.id}>
               <td>
-                {new Date(m.kickoff).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}
+                {formatKickoff(m.kickoff)}
                 {m.time_uncertain ? " ⚠" : ""}
               </td>
               <td>
