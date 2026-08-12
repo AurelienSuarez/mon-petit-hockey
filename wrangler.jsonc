@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "hockey-wc-2026-pool",
+  "name": "mon-petit-hockey",
   "main": ".open-next/worker.js",
   "compatibility_date": "2024-09-23",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
@@ -13,7 +13,7 @@
       // Self-reference binding required by OpenNext's internal fetch cache/dedupe.
       // The service name must match "name" above.
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "hockey-wc-2026-pool"
+      "service": "mon-petit-hockey"
     }
   ]
 }

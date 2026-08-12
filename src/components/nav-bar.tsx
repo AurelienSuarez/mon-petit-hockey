@@ -7,7 +7,7 @@ export function NavBar({ isLoggedIn }: { isLoggedIn: boolean }) {
       <div className="nav-inner">
         <Link href="/" className="brand">
           <span className="brand-mark">🏑</span>
-          Prono CM 2026
+          Mon Petit Hockey
         </Link>
         {isLoggedIn ? (
           <>

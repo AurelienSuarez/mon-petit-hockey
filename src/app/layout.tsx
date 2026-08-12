@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NavBar } from "@/components/nav-bar";
 
 export const metadata: Metadata = {
-  title: "Prono Hockey CM 2026",
+  title: "Mon Petit Hockey",
   description: "Pronostics entre amis pour la Coupe du monde de hockey 2026",
 };
 

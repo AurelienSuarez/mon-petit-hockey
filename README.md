@@ -1,8 +1,8 @@
-# Prono Hockey CM 2026
+# Mon Petit Hockey
 
 Plateforme de pronostics façon MPP pour la Coupe du monde de hockey sur gazon 2026 (Belgique/Pays-Bas, 15–30 août). Comptes, ligues privées entre amis (via code d'invitation), liste des 100 matchs avec cotes calculées, et un système de points façon MPP.
 
-Le design est volontairement minimal — HTML/CSS de base, aucune bibliothèque UI. La structure (base de données, sécurité, moteurs de calcul) est le focus de la v1.
+HTML/CSS custom (pas de bibliothèque UI), avec un vrai système de design (palette, badges, cartes) — voir `src/app/globals.css`.
 
 ## Stack
 
