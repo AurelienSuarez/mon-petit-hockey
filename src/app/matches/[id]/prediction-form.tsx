@@ -24,30 +24,33 @@ export function PredictionForm({
   return (
     <form action={formAction}>
       <input type="hidden" name="matchId" value={matchId} />
-      <label>
-        {homeLabel}
+
+      <div className="score-row">
+        <span className="team">{homeLabel}</span>
         <input
           type="number"
           name="homeScore"
           min={0}
           max={30}
           required
+          className="score-input"
           value={homeScore}
           onChange={(e) => setHomeScore(Number(e.target.value))}
         />
-      </label>
-      <label>
-        {awayLabel}
+        <span className="score-vs">–</span>
         <input
           type="number"
           name="awayScore"
           min={0}
           max={30}
           required
+          className="score-input"
           value={awayScore}
           onChange={(e) => setAwayScore(Number(e.target.value))}
         />
-      </label>
+        <span className="team">{awayLabel}</span>
+      </div>
+
       {isTie && (
         <label>
           Vainqueur du shoot-out (si égalité en phase finale)
@@ -58,9 +61,11 @@ export function PredictionForm({
           </select>
         </label>
       )}
+
       {state.error && <p className="error">{state.error}</p>}
-      {state.success && <p className="muted">Pronostic enregistré.</p>}
-      <button type="submit" disabled={pending}>
+      {state.success && <p className="success-note">✓ Pronostic enregistré.</p>}
+
+      <button type="submit" disabled={pending} style={{ width: "100%" }}>
         {pending ? "Enregistrement..." : existing ? "Mettre à jour" : "Valider mon pronostic"}
       </button>
     </form>

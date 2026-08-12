@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { formatKickoff } from "@/lib/format";
 import { slotLabel } from "@/lib/tournament/labels";
 import { hasPassed } from "@/lib/time";
+import { TeamLabel } from "@/components/team-label";
 import { PredictionForm } from "./prediction-form";
 
 export default async function MatchPage({ params }: { params: Promise<{ id: string }> }) {
@@ -18,16 +19,10 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
     : { data: [] };
   const teamsById = new Map((teams ?? []).map((t) => [t.id, t.name]));
 
-  const homeLabel = match.home_team_id
-    ? (teamsById.get(match.home_team_id) ?? "?")
-    : match.slot_home
-      ? slotLabel(match.slot_home)
-      : "?";
-  const awayLabel = match.away_team_id
-    ? (teamsById.get(match.away_team_id) ?? "?")
-    : match.slot_away
-      ? slotLabel(match.slot_away)
-      : "?";
+  const homeName = match.home_team_id ? (teamsById.get(match.home_team_id) ?? null) : null;
+  const awayName = match.away_team_id ? (teamsById.get(match.away_team_id) ?? null) : null;
+  const homeLabel = homeName ?? (match.slot_home ? slotLabel(match.slot_home) : "?");
+  const awayLabel = awayName ?? (match.slot_away ? slotLabel(match.slot_away) : "?");
 
   const { data: myPrediction } = await supabase
     .from("predictions")
@@ -67,41 +62,51 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
 
   return (
     <>
-      <h1>
-        {homeLabel} – {awayLabel}
-      </h1>
-      <p className="muted">
-        {formatKickoff(match.kickoff, "full")}
-        {match.time_uncertain && " ⚠ horaire à confirmer"} · {match.venue === "wavre" ? "Wavre" : "Amstelveen"}
-        {match.placement_label ? ` · ${match.placement_label}` : ""}
-      </p>
-      <p>
-        Cotes : {match.odds_home ?? "–"} / {match.odds_draw ?? "–"} / {match.odds_away ?? "–"}
-      </p>
-
-      {match.status === "finished" && (
-        <p>
-          <strong>
-            Score final : {match.home_score} – {match.away_score}
-            {match.home_so_score != null ? ` (tab: ${match.home_so_score}-${match.away_so_score})` : ""}
-          </strong>
+      <div className="card">
+        <div className="row" style={{ justifyContent: "center", gap: "1.5rem" }}>
+          <TeamLabel name={homeName} slot={match.slot_home} />
+          <span className="score-vs">
+            {match.status === "finished" ? `${match.home_score} – ${match.away_score}` : "vs"}
+          </span>
+          <TeamLabel name={awayName} slot={match.slot_away} />
+        </div>
+        <p className="muted" style={{ textAlign: "center", marginTop: "0.75rem" }}>
+          {formatKickoff(match.kickoff, "full")}
+          {match.time_uncertain && " ⚠ horaire à confirmer"} · {match.venue === "wavre" ? "Wavre" : "Amstelveen"}
+          {match.placement_label ? ` · ${match.placement_label}` : ""}
         </p>
-      )}
+        <div className="row" style={{ justifyContent: "center", marginTop: "0.5rem" }}>
+          <span className="odds-pill">{match.odds_home ?? "–"}</span>
+          <span className="odds-pill">{match.odds_draw ?? "–"}</span>
+          <span className="odds-pill">{match.odds_away ?? "–"}</span>
+        </div>
+        {match.status === "finished" && match.home_so_score != null && (
+          <p className="muted" style={{ textAlign: "center" }}>
+            Tirs au but : {match.home_so_score}-{match.away_so_score}
+          </p>
+        )}
+      </div>
 
       {canPredict ? (
-        <PredictionForm
-          matchId={match.id}
-          homeLabel={homeLabel}
-          awayLabel={awayLabel}
-          existing={myPrediction ?? null}
-        />
+        <div className="card" style={{ marginTop: "1rem" }}>
+          <PredictionForm
+            matchId={match.id}
+            homeLabel={homeLabel}
+            awayLabel={awayLabel}
+            existing={myPrediction ?? null}
+          />
+        </div>
       ) : myPrediction ? (
-        <p>
-          Ton pronostic : {myPrediction.pred_home_score} – {myPrediction.pred_away_score}
-          {myPrediction.points != null ? ` → ${myPrediction.points} pts` : ""}
+        <p className="card" style={{ marginTop: "1rem", textAlign: "center" }}>
+          Ton pronostic : <strong>{myPrediction.pred_home_score} – {myPrediction.pred_away_score}</strong>
+          {myPrediction.points != null && (
+            <span className="badge badge-accent" style={{ marginLeft: "0.5rem" }}>
+              {myPrediction.points} pts
+            </span>
+          )}
         </p>
       ) : (
-        <p className="muted">
+        <p className="muted" style={{ marginTop: "1rem", textAlign: "center" }}>
           {!match.home_team_id || !match.away_team_id
             ? "Les équipes ne sont pas encore connues pour ce match."
             : "Pronostics fermés pour ce match."}
@@ -111,26 +116,28 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
       {isLocked && others.length > 0 && (
         <>
           <h2>Pronostics des autres</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Joueur</th>
-                <th>Score</th>
-                <th>Points</th>
-              </tr>
-            </thead>
-            <tbody>
-              {others.map((o, i) => (
-                <tr key={i}>
-                  <td>{o.username}</td>
-                  <td>
-                    {o.pred_home_score} – {o.pred_away_score}
-                  </td>
-                  <td>{o.points ?? "–"}</td>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Joueur</th>
+                  <th>Score</th>
+                  <th>Points</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {others.map((o, i) => (
+                  <tr key={i}>
+                    <td>{o.username}</td>
+                    <td>
+                      {o.pred_home_score} – {o.pred_away_score}
+                    </td>
+                    <td>{o.points ?? "–"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
     </>

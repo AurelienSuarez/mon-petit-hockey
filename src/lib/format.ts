@@ -11,3 +11,18 @@ const TOURNAMENT_TIME_ZONE = "Europe/Paris";
 export function formatKickoff(iso: string, dateStyle: "short" | "full" = "short"): string {
   return new Date(iso).toLocaleString("fr-FR", { dateStyle, timeStyle: "short", timeZone: TOURNAMENT_TIME_ZONE });
 }
+
+export function formatTime(iso: string): string {
+  return new Date(iso).toLocaleString("fr-FR", { timeStyle: "short", timeZone: TOURNAMENT_TIME_ZONE });
+}
+
+/** Groups matches into date-heading buckets using Paris-local calendar days, not UTC ones. */
+export function dateHeading(iso: string): string {
+  const label = new Date(iso).toLocaleDateString("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: TOURNAMENT_TIME_ZONE,
+  });
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}

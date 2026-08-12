@@ -10,8 +10,11 @@ export default function LoginPage() {
   const [state, formAction, pending] = useActionState(loginAction, initialState);
 
   return (
-    <>
-      <h1>Connexion</h1>
+    <div className="card form-card">
+      <h1 style={{ textAlign: "center" }}>Connexion</h1>
+      <p className="muted" style={{ textAlign: "center", marginBottom: "1.25rem" }}>
+        Retrouve tes ligues et tes pronostics.
+      </p>
       <form action={formAction}>
         <label>
           Email
@@ -22,13 +25,13 @@ export default function LoginPage() {
           <input type="password" name="password" required autoComplete="current-password" />
         </label>
         {state.error && <p className="error">{state.error}</p>}
-        <button type="submit" disabled={pending}>
+        <button type="submit" disabled={pending} style={{ width: "100%" }}>
           {pending ? "Connexion..." : "Se connecter"}
         </button>
       </form>
-      <p className="muted">
+      <p className="muted" style={{ textAlign: "center", marginTop: "1rem" }}>
         Pas encore de compte ? <Link href="/register">Créer un compte</Link>
       </p>
-    </>
+    </div>
   );
 }

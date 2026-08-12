@@ -77,7 +77,7 @@ export function ResultForm({ matchId, isKnockout }: { matchId: string; isKnockou
           />
         </>
       )}
-      <button type="button" onClick={submit} disabled={pending}>
+      <button type="button" onClick={submit} disabled={pending} className="btn-sm">
         {pending ? "..." : "Valider"}
       </button>
       {error && <span className="error">{error}</span>}

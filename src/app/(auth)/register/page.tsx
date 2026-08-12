@@ -10,8 +10,11 @@ export default function RegisterPage() {
   const [state, formAction, pending] = useActionState(registerAction, initialState);
 
   return (
-    <>
-      <h1>Créer un compte</h1>
+    <div className="card form-card">
+      <h1 style={{ textAlign: "center" }}>Créer un compte</h1>
+      <p className="muted" style={{ textAlign: "center", marginBottom: "1.25rem" }}>
+        Rejoins la Coupe du monde de hockey 2026.
+      </p>
       <form action={formAction}>
         <label>
           Pseudo
@@ -26,13 +29,13 @@ export default function RegisterPage() {
           <input type="password" name="password" required minLength={8} autoComplete="new-password" />
         </label>
         {state.error && <p className="error">{state.error}</p>}
-        <button type="submit" disabled={pending}>
+        <button type="submit" disabled={pending} style={{ width: "100%" }}>
           {pending ? "Création..." : "Créer mon compte"}
         </button>
       </form>
-      <p className="muted">
+      <p className="muted" style={{ textAlign: "center", marginTop: "1rem" }}>
         Déjà un compte ? <Link href="/login">Se connecter</Link>
       </p>
-    </>
+    </div>
   );
 }

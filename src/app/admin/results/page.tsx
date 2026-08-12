@@ -1,6 +1,6 @@
 import { requireAdmin } from "@/lib/auth";
 import { formatKickoff } from "@/lib/format";
-import { slotLabel } from "@/lib/tournament/labels";
+import { TeamLabel } from "@/components/team-label";
 import { ResultForm } from "./result-form";
 
 const KNOCKOUT_STAGES = new Set(["semifinal", "third_place", "final"]);
@@ -14,8 +14,7 @@ export default async function AdminResultsPage() {
   ]);
 
   const teamsById = new Map((teams ?? []).map((t) => [t.id, t.name]));
-  const label = (teamId: string | null, slot: string | null) =>
-    teamId ? (teamsById.get(teamId) ?? "?") : slot ? slotLabel(slot) : "?";
+  const name = (teamId: string | null) => (teamId ? (teamsById.get(teamId) ?? null) : null);
 
   const all = matches ?? [];
   const pending = all.filter((m) => m.status === "scheduled" && m.home_team_id && m.away_team_id);
@@ -27,61 +26,71 @@ export default async function AdminResultsPage() {
       <h1>Saisie des résultats</h1>
 
       <h2>À jouer, prêts à saisir ({pending.length})</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Match</th>
-            <th>Résultat</th>
-          </tr>
-        </thead>
-        <tbody>
-          {pending.map((m) => (
-            <tr key={m.id}>
-              <td>{formatKickoff(m.kickoff)}</td>
-              <td>
-                {m.gender === "F" ? "♀" : "♂"} {label(m.home_team_id, m.slot_home)} – {label(m.away_team_id, m.slot_away)}
-              </td>
-              <td>
-                <ResultForm matchId={m.id} isKnockout={KNOCKOUT_STAGES.has(m.stage)} />
-              </td>
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Match</th>
+              <th>Résultat</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {pending.map((m) => (
+              <tr key={m.id}>
+                <td>{formatKickoff(m.kickoff)}</td>
+                <td>
+                  <span className={`badge ${m.gender === "F" ? "badge-f" : "badge-m"}`}>
+                    {m.gender === "F" ? "♀" : "♂"}
+                  </span>{" "}
+                  <TeamLabel name={name(m.home_team_id)} slot={m.slot_home} /> –{" "}
+                  <TeamLabel name={name(m.away_team_id)} slot={m.slot_away} />
+                </td>
+                <td>
+                  <ResultForm matchId={m.id} isKnockout={KNOCKOUT_STAGES.has(m.stage)} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <h2>Équipes pas encore connues ({blocked.length})</h2>
-      <ul>
+      <div className="card stack" style={{ gap: "0.4rem" }}>
         {blocked.map((m) => (
-          <li key={m.id} className="muted">
-            {m.gender === "F" ? "♀" : "♂"} {label(m.home_team_id, m.slot_home)} – {label(m.away_team_id, m.slot_away)}
+          <div key={m.id} className="muted">
+            {m.gender === "F" ? "♀" : "♂"} <TeamLabel name={name(m.home_team_id)} slot={m.slot_home} /> –{" "}
+            <TeamLabel name={name(m.away_team_id)} slot={m.slot_away} />
             {m.placement_label ? ` (${m.placement_label})` : ""}
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
 
       <h2>Terminés ({finished.length})</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Match</th>
-            <th>Score</th>
-          </tr>
-        </thead>
-        <tbody>
-          {finished.map((m) => (
-            <tr key={m.id}>
-              <td>
-                {m.gender === "F" ? "♀" : "♂"} {label(m.home_team_id, m.slot_home)} – {label(m.away_team_id, m.slot_away)}
-              </td>
-              <td>
-                {m.home_score} – {m.away_score}
-                {m.home_so_score != null ? ` (tab ${m.home_so_score}-${m.away_so_score})` : ""}
-              </td>
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Match</th>
+              <th>Score</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {finished.map((m) => (
+              <tr key={m.id}>
+                <td>
+                  {m.gender === "F" ? "♀" : "♂"} <TeamLabel name={name(m.home_team_id)} slot={m.slot_home} /> –{" "}
+                  <TeamLabel name={name(m.away_team_id)} slot={m.slot_away} />
+                </td>
+                <td>
+                  {m.home_score} – {m.away_score}
+                  {m.home_so_score != null ? ` (tab ${m.home_so_score}-${m.away_so_score})` : ""}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }
