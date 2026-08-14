@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
+import { GenderBadge } from "@/components/gender-badge";
+import { LeagueManage } from "./league-manage";
 
 const RANK_CLASS: Record<number, string> = { 1: "gold", 2: "silver", 3: "bronze" };
 
@@ -25,7 +27,7 @@ export default async function LeaguePage({ params }: { params: Promise<{ id: str
           <h1>{league.name}</h1>
           <div className="row" style={{ marginTop: "0.35rem" }}>
             <span className={`badge ${league.gender === "F" ? "badge-f" : "badge-m"}`}>
-              {league.gender === "F" ? "♀ Tournoi Femmes" : "♂ Tournoi Hommes"}
+              <GenderBadge gender={league.gender} /> {league.gender === "F" ? "Tournoi Femmes" : "Tournoi Hommes"}
             </span>
             <Link href={`/matches?gender=${league.gender}`} className="muted">
               voir les matchs de cette compétition →
@@ -37,6 +39,10 @@ export default async function LeaguePage({ params }: { params: Promise<{ id: str
       <p className="muted">
         Code d&apos;invitation à partager : <strong style={{ color: "var(--text)" }}>{league.invite_code}</strong>
       </p>
+
+      {league.owner_id === user.id && (
+        <LeagueManage leagueId={league.id} inviteCode={league.invite_code} />
+      )}
 
       <h2>Classement</h2>
       <div className="card stack" style={{ gap: "0.15rem" }}>

@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { registerAction, type AuthActionState } from "../actions";
+import { HockeyIllustration } from "@/components/hockey-illustration";
 
 const initialState: AuthActionState = { error: null };
 
@@ -11,6 +12,9 @@ export default function RegisterPage() {
 
   return (
     <div className="card form-card">
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: "0.5rem" }}>
+        <HockeyIllustration />
+      </div>
       <h1 style={{ textAlign: "center" }}>Créer un compte</h1>
       <p className="muted" style={{ textAlign: "center", marginBottom: "1.25rem" }}>
         Rejoins la Coupe du monde de hockey 2026.

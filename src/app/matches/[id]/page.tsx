@@ -4,6 +4,7 @@ import { formatKickoff } from "@/lib/format";
 import { slotLabel } from "@/lib/tournament/labels";
 import { hasPassed } from "@/lib/time";
 import { TeamLabel } from "@/components/team-label";
+import { KNOCKOUT_STAGES } from "@/lib/types";
 import { PredictionForm } from "./prediction-form";
 
 export default async function MatchPage({ params }: { params: Promise<{ id: string }> }) {
@@ -82,7 +83,7 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
         </div>
         {match.status === "finished" && match.home_so_score != null && (
           <p className="muted" style={{ textAlign: "center" }}>
-            Tirs au but : {match.home_so_score}-{match.away_so_score}
+            Shoot-out : {match.home_so_score}-{match.away_so_score}
           </p>
         )}
       </div>
@@ -94,6 +95,7 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
             homeLabel={homeLabel}
             awayLabel={awayLabel}
             existing={myPrediction ?? null}
+            isKnockout={KNOCKOUT_STAGES.includes(match.stage)}
           />
         </div>
       ) : myPrediction ? (

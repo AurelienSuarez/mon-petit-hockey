@@ -17,7 +17,14 @@ const registerSchema = z.object({
 
 export interface AuthActionState {
   error: string | null;
+  success?: boolean;
 }
+
+// Supabase only honors a resetPasswordForEmail redirectTo that's on the project's
+// Redirect URLs allow list — kept as one constant since it has to match exactly what's
+// configured there (see supabase/migrations for the rest of the app's config surface;
+// this one lives in Supabase's dashboard, not a migration, since it's an Auth setting).
+const SITE_URL = "https://mon-petit-hockey.cestfun.workers.dev";
 
 export async function registerAction(_prev: AuthActionState, formData: FormData): Promise<AuthActionState> {
   const parsed = registerSchema.safeParse({
@@ -63,6 +70,22 @@ export async function loginAction(_prev: AuthActionState, formData: FormData): P
   if (error) return { error: "Email ou mot de passe incorrect" };
 
   redirect("/dashboard");
+}
+
+const forgotPasswordSchema = z.object({ email: z.string().email() });
+
+export async function forgotPasswordAction(_prev: AuthActionState, formData: FormData): Promise<AuthActionState> {
+  const parsed = forgotPasswordSchema.safeParse({ email: formData.get("email") });
+  if (!parsed.success) return { error: "Email invalide" };
+
+  const supabase = await createClient();
+  await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: `${SITE_URL}/reset-password`,
+  });
+
+  // Same success response whether or not the email is actually registered — never
+  // reveals which addresses have accounts.
+  return { error: null, success: true };
 }
 
 export async function logoutAction() {

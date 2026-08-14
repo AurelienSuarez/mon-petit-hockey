@@ -28,7 +28,7 @@ export function ResultForm({ matchId, isKnockout }: { matchId: string; isKnockou
         }),
       });
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
+        const body = (await res.json().catch(() => ({}))) as { error?: string };
         setError(body.error ?? `Erreur (${res.status})`);
         return;
       }

@@ -35,18 +35,15 @@ export async function submitPredictionAction(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Non connecté" };
 
-  const isTie = parsed.data.homeScore === parsed.data.awayScore;
-
-  const { error } = await supabase.from("predictions").upsert(
-    {
-      user_id: user.id,
-      match_id: parsed.data.matchId,
-      pred_home_score: parsed.data.homeScore,
-      pred_away_score: parsed.data.awayScore,
-      pred_shootout_winner: isTie ? (parsed.data.shootoutWinner ?? null) : null,
-    },
-    { onConflict: "user_id,match_id" },
-  );
+  // submit_prediction() also snapshots the teams' current Elo onto the row (used to
+  // price the prediction's odds at scoring time) — something a plain client upsert
+  // can't do without exposing those columns to direct client writes.
+  const { error } = await supabase.rpc("submit_prediction", {
+    p_match_id: parsed.data.matchId,
+    p_home_score: parsed.data.homeScore,
+    p_away_score: parsed.data.awayScore,
+    p_shootout_winner: parsed.data.shootoutWinner ?? null,
+  });
 
   if (error) {
     const locked = error.message.includes("predictions_locked");
@@ -54,5 +51,6 @@ export async function submitPredictionAction(
   }
 
   revalidatePath(`/matches/${parsed.data.matchId}`);
+  revalidatePath("/matches");
   return { error: null, success: true };
 }

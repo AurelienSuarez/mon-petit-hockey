@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
+import { GenderBadge } from "@/components/gender-badge";
 
 export default async function DashboardPage() {
   const { supabase } = await requireUser();
@@ -38,7 +39,7 @@ export default async function DashboardPage() {
             <div className="row" style={{ justifyContent: "space-between" }}>
               <strong>{league.name}</strong>
               <span className={`badge ${league.gender === "F" ? "badge-f" : "badge-m"}`}>
-                {league.gender === "F" ? "♀ Femmes" : "♂ Hommes"}
+                <GenderBadge gender={league.gender} /> {league.gender === "F" ? "Femmes" : "Hommes"}
               </span>
             </div>
             <p className="muted" style={{ margin: "0.35rem 0 0" }}>

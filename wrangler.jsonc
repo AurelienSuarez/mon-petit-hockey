@@ -1,9 +1,21 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "mon-petit-hockey",
-  "main": ".open-next/worker.js",
+  "main": "./custom-worker.ts",
   "compatibility_date": "2024-09-23",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // Every 15 min, all day — cheap no-op outside the tournament window (see
+  // custom-worker.ts), and matches can run long/into extra time so a tighter schedule
+  // buys faster result pickup without much cost.
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  },
+  // So the FIH-sync cron's console.log/console.error output (and any request errors)
+  // are actually visible somewhere — without this, a silent failure during the
+  // tournament would leave no trace to debug from.
+  "observability": {
+    "enabled": true
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"

@@ -10,23 +10,34 @@ export function PredictionForm({
   homeLabel,
   awayLabel,
   existing,
+  isKnockout,
+  compact = false,
 }: {
   matchId: string;
   homeLabel: string;
   awayLabel: string;
   existing: { pred_home_score: number; pred_away_score: number; pred_shootout_winner: "home" | "away" | null } | null;
+  /** Pool-stage matches (round1/crossgroup/ranking) just end in a draw — only
+   * knockout-stage matches (semifinal/third_place/final) go to a shoot-out. */
+  isKnockout: boolean;
+  /** Skips the team-name labels either side of the score inputs — for use inside a
+   * match card that already shows both teams' names/badges around the form. */
+  compact?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(submitPredictionAction, initialState);
-  const [homeScore, setHomeScore] = useState(existing?.pred_home_score ?? 0);
-  const [awayScore, setAwayScore] = useState(existing?.pred_away_score ?? 0);
-  const isTie = homeScore === awayScore;
+  // Blank rather than defaulting to 0-0: a 0-0 default would look like a real
+  // prediction and would silently count as a tie, popping up the shoot-out question
+  // before the user has entered anything.
+  const [homeScore, setHomeScore] = useState<number | "">(existing?.pred_home_score ?? "");
+  const [awayScore, setAwayScore] = useState<number | "">(existing?.pred_away_score ?? "");
+  const isTie = isKnockout && homeScore !== "" && awayScore !== "" && homeScore === awayScore;
 
   return (
-    <form action={formAction}>
+    <form action={formAction} className={compact ? "prediction-form-compact" : undefined}>
       <input type="hidden" name="matchId" value={matchId} />
 
       <div className="score-row">
-        <span className="team">{homeLabel}</span>
+        {!compact && <span className="team">{homeLabel}</span>}
         <input
           type="number"
           name="homeScore"
@@ -35,7 +46,7 @@ export function PredictionForm({
           required
           className="score-input"
           value={homeScore}
-          onChange={(e) => setHomeScore(Number(e.target.value))}
+          onChange={(e) => setHomeScore(e.target.value === "" ? "" : Number(e.target.value))}
         />
         <span className="score-vs">–</span>
         <input
@@ -46,14 +57,14 @@ export function PredictionForm({
           required
           className="score-input"
           value={awayScore}
-          onChange={(e) => setAwayScore(Number(e.target.value))}
+          onChange={(e) => setAwayScore(e.target.value === "" ? "" : Number(e.target.value))}
         />
-        <span className="team">{awayLabel}</span>
+        {!compact && <span className="team">{awayLabel}</span>}
       </div>
 
       {isTie && (
         <label>
-          Vainqueur du shoot-out (si égalité en phase finale)
+          {compact ? "Vainqueur shoot-out" : "Vainqueur du shoot-out (si égalité en phase finale)"}
           <select name="shootoutWinner" defaultValue={existing?.pred_shootout_winner ?? ""}>
             <option value="">–</option>
             <option value="home">{homeLabel}</option>
@@ -63,10 +74,10 @@ export function PredictionForm({
       )}
 
       {state.error && <p className="error">{state.error}</p>}
-      {state.success && <p className="success-note">✓ Pronostic enregistré.</p>}
+      {state.success && <p className="success-note">✓ Enregistré</p>}
 
       <button type="submit" disabled={pending} style={{ width: "100%" }}>
-        {pending ? "Enregistrement..." : existing ? "Mettre à jour" : "Valider mon pronostic"}
+        {pending ? "..." : compact ? existing ? "Modifier" : "Valider" : existing ? "Mettre à jour" : "Valider mon pronostic"}
       </button>
     </form>
   );

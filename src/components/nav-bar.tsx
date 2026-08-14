@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { logoutAction } from "@/app/(auth)/actions";
 
 export function NavBar({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
@@ -9,21 +8,7 @@ export function NavBar({ isLoggedIn }: { isLoggedIn: boolean }) {
           <span className="brand-mark">🏑</span>
           Mon Petit Hockey
         </Link>
-        {isLoggedIn ? (
-          <>
-            <Link href="/dashboard" className="nav-link">
-              Mes ligues
-            </Link>
-            <Link href="/matches" className="nav-link">
-              Matchs
-            </Link>
-            <form action={logoutAction}>
-              <button type="submit" className="btn-secondary btn-sm">
-                Déconnexion
-              </button>
-            </form>
-          </>
-        ) : (
+        {!isLoggedIn && (
           <>
             <Link href="/login" className="nav-link">
               Connexion

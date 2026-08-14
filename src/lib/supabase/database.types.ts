@@ -102,6 +102,8 @@ export interface Database {
           pred_away_score: number;
           pred_shootout_winner: ShootoutWinner | null;
           points: number | null;
+          locked_home_elo: number | null;
+          locked_away_elo: number | null;
           created_at: string;
           updated_at: string;
         };
@@ -113,12 +115,16 @@ export interface Database {
           pred_away_score: number;
           pred_shootout_winner?: ShootoutWinner | null;
           points?: number | null;
+          locked_home_elo?: number | null;
+          locked_away_elo?: number | null;
         };
         Update: Partial<{
           pred_home_score: number;
           pred_away_score: number;
           pred_shootout_winner: ShootoutWinner | null;
           points: number | null;
+          locked_home_elo: number | null;
+          locked_away_elo: number | null;
         }>;
         Relationships: [];
       };
@@ -139,6 +145,27 @@ export interface Database {
       league_standings: {
         Args: { p_league_id: string };
         Returns: { user_id: string; username: string; total_points: number }[];
+      };
+      my_scores: {
+        Args: Record<string, never>;
+        Returns: { gender: Gender; total_points: number }[];
+      };
+      global_standings: {
+        Args: { p_gender: Gender };
+        Returns: { user_id: string; username: string; total_points: number }[];
+      };
+      delete_league: {
+        Args: { p_league_id: string };
+        Returns: undefined;
+      };
+      submit_prediction: {
+        Args: {
+          p_match_id: string;
+          p_home_score: number;
+          p_away_score: number;
+          p_shootout_winner?: ShootoutWinner | null;
+        };
+        Returns: Database["public"]["Tables"]["predictions"]["Row"];
       };
     };
     Enums: {

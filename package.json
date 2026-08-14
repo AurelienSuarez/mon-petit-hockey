@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "npm run cf-typegen",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
     "seed": "tsx supabase/seed/seed.ts",
     "preview": "opennextjs-cloudflare build && wrangler dev",
+    "predeploy": "npm run cf-typegen",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },

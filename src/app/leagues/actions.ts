@@ -44,3 +44,14 @@ export async function joinLeagueAction(_prev: LeagueActionState, formData: FormD
 
   redirect(`/leagues/${data.id}`);
 }
+
+export async function deleteLeagueAction(_prev: LeagueActionState, formData: FormData): Promise<LeagueActionState> {
+  const leagueId = z.string().uuid().safeParse(formData.get("leagueId"));
+  if (!leagueId.success) return { error: "Ligue invalide" };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("delete_league", { p_league_id: leagueId.data });
+  if (error) return { error: "Seul le créateur de la ligue peut la supprimer." };
+
+  redirect("/dashboard");
+}
