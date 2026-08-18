@@ -6,6 +6,7 @@ import { TeamLabel } from "@/components/team-label";
 import { GenderBadge } from "@/components/gender-badge";
 import { ResultForm } from "./result-form";
 import { SyncFihButton } from "./sync-fih-button";
+import { RecomputePointsButton } from "./recompute-points-button";
 
 const KNOCKOUT_STAGES = new Set(["semifinal", "third_place", "final"]);
 
@@ -56,6 +57,7 @@ export default async function AdminResultsPage() {
       </p>
 
       <SyncFihButton />
+      <RecomputePointsButton />
 
       <h2>À jouer, prêts à saisir ({pending.length})</h2>
       <div className="table-wrap">
